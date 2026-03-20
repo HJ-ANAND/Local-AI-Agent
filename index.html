@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline AI Enterprise Assistant</title>
+  </head>
+  <body>
+    <h1>Offline AI Enterprise Assistant</h1>
+    <p>Privacy-focused local AI for your business data.</p>
+    <hr />
+
+    <div id="ai-tool">
+      <h3>Code-Related Tools</h3>
+      <p>Type your code or code generation request below:</p>
+      <textarea
+        id="prompt"
+        rows="8"
+        cols="100"
+        placeholder="Enter request or code here..."
+      ></textarea>
+      <br /><br />
+      <button onclick="generateCode()">Generate Code</button>
+      <button onclick="debugCode()">Debug Code</button>
+      <button onclick="explainCode()">Explain Code</button>
+    </div>
+
+    <hr />
+
+    <div id="doc-tool">
+      <h3>Document-Related Tools</h3>
+      <p>1. Upload PDF for analysis:</p>
+      <input type="file" id="pdfFile" accept=".pdf" />
+      <br /><br />
+      <p>2. Ask a question about the document (optional for summarization):</p>
+      <input
+        type="text"
+        id="question"
+        size="80"
+        placeholder="Type question for the uploaded PDF here..."
+      />
+      <br /><br />
+      <button onclick="summarizeDocument()">Summarize Document</button>
+      <button onclick="askQuestion()">Ask Question About Document</button>
+    </div>
+
+    <hr />
+
+    <div id="loading" style="display: none; color: blue">
+      <b>Processing your request... please wait. AI model is being loaded.</b>
+    </div>
+
+    <div id="result-container">
+      <h3>AI Response:</h3>
+      <p
+        id="response-output"
+        style="
+          white-space: pre-wrap;
+          font-family: monospace;
+          border: 1px solid #ccc;
+          padding: 10px;
+        "
+      ></p>
+    </div>
+
+    <script>
+      async function fetchAI(endpoint, body) {
+        const loading = document.getElementById("loading");
+        const output = document.getElementById("response-output");
+
+        loading.style.display = "block";
+        output.innerText = "";
+
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+
+          const text = await response.text();
+          let data;
+          try {
+            data = JSON.parse(text);
+          } catch (e) {
+            output.innerText = "Error: Invalid response from server. " + text;
+            return;
+          }
+
+          if (data.error) {
+            output.innerText = "Error: " + data.error;
+          } else {
+            output.innerText = data.response;
+          }
+        } catch (err) {
+          output.innerText = "Network Error: " + err;
+        } finally {
+          loading.style.display = "none";
+        }
+      }
+
+      function generateCode() {
+        const promptValue = document.getElementById("prompt").value;
+        fetchAI("/generate-code", { prompt: promptValue });
+      }
+
+      function debugCode() {
+        const promptValue = document.getElementById("prompt").value;
+        fetchAI("/debug-code", { code: promptValue });
+      }
+
+      function explainCode() {
+        const promptValue = document.getElementById("prompt").value;
+        fetchAI("/explain-code", { code: promptValue });
+      }
+
+      async function summarizeDocument() {
+        const loading = document.getElementById("loading");
+        const output = document.getElementById("response-output");
+        const fileInput = document.getElementById("pdfFile");
+
+        if (!fileInput.files[0]) {
+          alert("Please select a PDF file first.");
+          return;
+        }
+
+        loading.style.display = "block";
+        output.innerText = "";
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+
+        try {
+          const response = await fetch("/summarize-document", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await response.json();
+          output.innerText = data.response || "Error: " + data.error;
+        } catch (err) {
+          output.innerText = "Network Error: " + err;
+        } finally {
+          loading.style.display = "none";
+        }
+      }
+
+      async function askQuestion() {
+        const loading = document.getElementById("loading");
+        const output = document.getElementById("response-output");
+        const fileInput = document.getElementById("pdfFile");
+        const questionInput = document.getElementById("question");
+
+        if (!fileInput.files[0]) {
+          alert("Please select a PDF file first.");
+          return;
+        }
+        if (!questionInput.value) {
+          alert("Please enter a question.");
+          return;
+        }
+
+        loading.style.display = "block";
+        output.innerText = "";
+
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        formData.append("question", questionInput.value);
+
+        try {
+          const response = await fetch("/ask-question", {
+            method: "POST",
+            body: formData,
+          });
+          const data = await response.json();
+          output.innerText = data.response || "Error: " + data.error;
+        } catch (err) {
+          output.innerText = "Network Error: " + err;
+        } finally {
+          loading.style.display = "none";
+        }
+      }
+    </script>
+  </body>
+</html>

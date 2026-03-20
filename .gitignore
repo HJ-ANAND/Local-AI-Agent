@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+uploads/*
+!uploads/.gitkeep
+temp_code/*
+!temp_code/.gitkeep
+server.log
+.DS_Store
