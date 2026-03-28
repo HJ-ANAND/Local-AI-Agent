@@ -3,43 +3,33 @@
    Black & Grey Dark Theme
    ============================================= */
 
-/* ---------- Animated Background Blobs ---------- */
 .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.35;
-  animation: blobMove 18s ease-in-out infinite alternate;
+  filter: blur(200px);
   will-change: transform;
 }
 
 .blob-1 {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(161, 161, 170, 0.2), transparent 70%);
+  width: 120vw;
+  height: 120vh;
+  background: radial-gradient(circle, rgba(90, 25, 45, 0.45), transparent 70%);
   top: -10%;
-  left: -8%;
-  animation-duration: 20s;
+  right: -30%;
+  animation: blobMove 30s ease-in-out infinite alternate;
 }
 
 .blob-2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(113, 113, 122, 0.2), transparent 70%);
-  top: 20%;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle, rgba(60, 15, 30, 0.5), transparent 70%);
+  bottom: -20%;
   right: -10%;
-  animation-duration: 24s;
-  animation-delay: -5s;
+  animation: blobMove 25s ease-in-out infinite alternate-reverse;
 }
 
 .blob-3 {
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(82, 82, 91, 0.25), transparent 70%);
-  bottom: -5%;
-  left: 30%;
-  animation-duration: 22s;
-  animation-delay: -10s;
+  display: none;
 }
 
 @keyframes blobMove {
