@@ -35,7 +35,7 @@ def ask_ai(prompt, task_type):
     Sends a prompt to Ollama after ensuring the correct model is used.
     """
     # Determine which model to use and which to stop
-    if task_type in ["code_gen", "code_debug", "code_explain"]:
+    if "coding" in task_type:
         target_model = MODELS["coding"]
         other_model = MODELS["document"]
     else:
@@ -43,7 +43,7 @@ def ask_ai(prompt, task_type):
         other_model = MODELS["coding"]
 
     # 1. Stop the unused model
-    stop_model(other_model)
+    #stop_model(other_model)
 
     # 2. Preparation for request
     # Note: Ollama will automatically load the target_model when we call the API.
@@ -54,11 +54,12 @@ def ask_ai(prompt, task_type):
         "stream": False
     }
 
+
     print(f"Sending request to Ollama using model: {target_model}")
     
     try:
         # 3. Send the prompt to Ollama API
-        response = requests.post(OLLAMA_API_URL, json=payload)
+        response = requests.post(OLLAMA_API_URL,json=payload,timeout=120)
         response.raise_for_status()
         
         result = response.json()
